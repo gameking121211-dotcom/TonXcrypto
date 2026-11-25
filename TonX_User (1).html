@@ -1,0 +1,2913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TONX CRYPTO — Telegram Mining & Rewards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<style>
+:root {
+  --primary: #0878E8;
+  --primary-dark: #065BB5;
+  --primary-light: #E8F3FE;
+  --navy: #092B59;
+  --bg: #FFFFFF;
+  --bg-sec: #F5F7FA;
+  --text: #151B25;
+  --muted: #7B8490;
+  --border: #E6EBF1;
+  --success: #10B981;
+  --success-bg: #ECFDF5;
+  --warning: #F59E0B;
+  --warning-bg: #FFFBEB;
+  --danger: #EF4444;
+  --shadow-sm: 0 2px 8px rgba(9, 43, 89, 0.05);
+  --shadow-md: 0 8px 24px rgba(8, 120, 232, 0.14);
+  --shadow-nav: 0 10px 28px rgba(8, 120, 232, 0.30);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  user-select: none;
+}
+
+h1, h2, h3, h4, .font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Compact Phone Container */
+.app-container {
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 10px 14px 16px;
+}
+
+/* Top Brand & Language Bar */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.brand-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+  color: var(--navy);
+}
+
+.brand-name span {
+  color: var(--primary);
+}
+
+.lang-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+/* Tab Views */
+.tab-view {
+  display: none;
+  animation: fadeSlide 0.2s ease-out;
+}
+.tab-view.active {
+  display: block;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Profile Header */
+.user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.user-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--navy));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  overflow: hidden;
+}
+
+.avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.welcome-label {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.user-display-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.active-cards-badge {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 999px;
+}
+
+.back-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.getting-started-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--primary);
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* Hero Balance Card */
+.hero-balance-card {
+  background: linear-gradient(135deg, #1084F5 0%, #0878E8 55%, #0558B8 100%);
+  border-radius: 18px;
+  padding: 16px;
+  color: #FFFFFF;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.hero-sublabel {
+  font-size: 12.5px;
+  opacity: 0.9;
+}
+
+.hero-amount {
+  font-family: 'Poppins', sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  margin: 1px 0;
+}
+
+.hero-daily-rate {
+  font-size: 12px;
+  opacity: 0.92;
+  margin-bottom: 12px;
+}
+
+.hero-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-hero-white {
+  background: #FFFFFF;
+  color: var(--primary);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.btn-hero-outline {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* Free Bronze Banner */
+.free-card-cta {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.free-card-cta h3 {
+  font-size: 15.5px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.free-card-cta p {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Live Mining Panel */
+.mining-live-panel {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 13px 14px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+}
+
+.live-panel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.accrual-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.accrual-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.btn-collect {
+  background: linear-gradient(135deg, #1084F5, #0878E8);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-collect:disabled {
+  background: #CBD5E1;
+  cursor: not-allowed;
+}
+
+.active-rig-item {
+  background: var(--bg-sec);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Section & Page Titles */
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0 8px;
+}
+
+.section-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.page-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.page-step-sub {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.balance-chip {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
+/* Cards Catalog */
+.card-package-wrapper {
+  margin-bottom: 20px;
+}
+
+.card-tier-bronze { background: linear-gradient(135deg, #C89B6E 0%, #8C5E35 100%); }
+.card-tier-silver { background: linear-gradient(135deg, #9AA5B1 0%, #52606D 100%); }
+.card-tier-copper { background: linear-gradient(135deg, #C96A42 0%, #7C361A 100%); }
+.card-tier-ruby { background: linear-gradient(135deg, #E11D48 0%, #881337 100%); }
+.card-tier-sapphire { background: linear-gradient(135deg, #1D8CF8 0%, #093B8C 100%); }
+.card-tier-platinum { background: linear-gradient(135deg, #8B5CF6 0%, #4C1D95 100%); }
+.card-tier-gold { background: linear-gradient(135deg, #EAB308 0%, #92600A 100%); }
+.card-tier-emerald { background: linear-gradient(135deg, #10B981 0%, #047857 100%); }
+.card-tier-titan { background: linear-gradient(135deg, #475569 0%, #1E293B 100%); }
+.card-tier-obsidian { background: linear-gradient(135deg, #27272A 0%, #09090B 100%); }
+.card-tier-diamond { background: linear-gradient(135deg, #22D3EE 0%, #0284C7 55%, #1E3A8A 100%); }
+
+.mc-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.mc-daily-amount {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.mc-daily-amount span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mc-pill {
+  background: rgba(255, 255, 255, 0.22);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.mc-pill.free {
+  background: #10B981;
+}
+
+.mc-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+.card-action-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.btn-card-action {
+  background: linear-gradient(135deg, #1084F5, #0878E8);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  min-width: 108px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Surface Cards & Gateways */
+.surface-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+}
+
+.gateway-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.gateway-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gateway-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.gateway-logo.ton { background: #E8F4FD; color: #0098EA; }
+.gateway-logo.usdt { background: #E6F7F2; color: #26A17B; }
+
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-left: 5px;
+}
+
+.badge-tag.blue { background: #E8F3FE; color: #0878E8; }
+.badge-tag.green { background: #E6F7F2; color: #10B981; }
+
+.info-banner-box {
+  background: var(--bg-sec);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.warning-banner-box {
+  background: var(--warning-bg);
+  border: 1px solid #FDE68A;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #78350F;
+  margin-bottom: 12px;
+}
+
+.danger-text {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 500;
+  margin: 10px 0;
+}
+
+/* Deposit Step 2 (TON Lock Quote & USDT BEP20 Personal Wallet) */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+
+.preset-btn {
+  background: var(--bg-sec);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.preset-btn.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.qr-box {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.qr-box img {
+  width: 156px;
+  height: 156px;
+  border-radius: 10px;
+  margin: 0 auto 10px;
+  display: block;
+}
+
+.addr-copy-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-sec);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.btn-copy-icon {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--text);
+}
+
+.status-waiting-box {
+  background: var(--primary-light);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.blue-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+
+/* Withdraw Step 2 Form (Exact Video Layout) */
+.withdraw-sub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.withdraw-mini-box {
+  background: var(--bg-sec);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 11.5px;
+}
+
+.withdraw-mini-box span {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.withdraw-mini-box strong {
+  font-size: 12.5px;
+  color: var(--text);
+}
+
+.summary-lines {
+  background: var(--bg-sec);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.summary-line-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.form-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--bg-sec);
+  border-radius: 12px;
+  padding: 11px 13px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  margin-bottom: 12px;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  background: #FFFFFF;
+}
+
+.btn-primary-full {
+  width: 100%;
+  background: linear-gradient(135deg, #1084F5, #0878E8);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 13px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.btn-primary-full:disabled {
+  background: #9CC7F5;
+  cursor: not-allowed;
+}
+
+/* Referral Tab */
+.referral-hero {
+  background: linear-gradient(155deg, #1084F5 0%, #0878E8 60%, #0657B0 100%);
+  border-radius: 20px;
+  padding: 18px 16px;
+  color: #FFFFFF;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 12px;
+}
+
+.ref-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.ref-glass-box {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.ref-stats-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+  padding-top: 10px;
+  text-align: center;
+}
+
+.milestone-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--bg-sec);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+}
+
+
+/* Constant Automatic Shine & Reflection on Buttons */
+@keyframes buttonShineSweep {
+  0% { transform: translateX(-140%) skewX(-22deg); opacity: 0; }
+  20% { opacity: 0.72; }
+  55% { opacity: 0.55; }
+  100% { transform: translateX(260%) skewX(-22deg); opacity: 0; }
+}
+
+.btn-hero-white,
+.btn-hero-outline,
+.btn-collect,
+.btn-card-action,
+.btn-primary-full,
+.preset-btn.active {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-hero-white::after,
+.btn-hero-outline::after,
+.btn-collect::after,
+.btn-card-action::after,
+.btn-primary-full::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -45%;
+  width: 48%;
+  height: 140%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  animation: buttonShineSweep 3.2s ease-in-out infinite;
+}
+
+/* Color-Matched Button Shadows */
+.btn-hero-white {
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.36), 0 4px 10px rgba(9, 43, 89, 0.14);
+}
+
+.btn-hero-outline {
+  box-shadow: 0 8px 20px rgba(5, 88, 184, 0.45);
+}
+
+.btn-collect,
+.btn-card-action,
+.btn-primary-full {
+  box-shadow: 0 8px 20px rgba(8, 120, 232, 0.36);
+}
+
+.preset-btn.active {
+  box-shadow: 0 6px 16px rgba(8, 120, 232, 0.28);
+}
+
+/* Card Crop (Remove White/Grey Outer Padding) & Card-Colored Shadow */
+.metallic-card {
+  width: 100%;
+  aspect-ratio: 1.62 / 1;
+  max-height: 212px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 12px 26px rgba(8, 120, 232, 0.24), 0 6px 14px rgba(9, 43, 89, 0.12);
+  margin-bottom: 10px;
+  transform-style: preserve-3d;
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+  will-change: transform;
+  touch-action: none;
+  --shine-x: 50%;
+  --shine-y: 50%;
+  --shine-opacity: 0.45;
+}
+
+.metallic-card-bg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.065);
+  transform-origin: center;
+  display: block;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.metallic-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 20px;
+  background: radial-gradient(
+    circle at var(--shine-x) var(--shine-y),
+    rgba(255, 255, 255, var(--shine-opacity)) 0%,
+    rgba(255, 255, 255, 0.14) 30%,
+    rgba(255, 255, 255, 0) 64%
+  );
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* Pill Dock Matching IMG_20261124_130925.jpg */
+.floating-nav-wrap {
+  position: fixed;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 14px);
+  max-width: 448px;
+  z-index: 950;
+}
+
+.floating-nav {
+  background: linear-gradient(90deg, #0663D4 0%, #0878E8 52%, #1388FF 100%);
+  border-radius: 999px;
+  padding: 5px 6px;
+  height: 62px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 12px 28px rgba(8, 120, 232, 0.36);
+}
+
+.nav-item {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  height: 52px;
+  padding: 4px 2px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.nav-item i {
+  font-size: 15px;
+}
+
+.nav-item span {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.nav-item.active {
+  background: #FFFFFF;
+  color: #0878E8;
+  height: 66px;
+  margin-top: -6px;
+  border-radius: 24px;
+  box-shadow: 0 8px 20px rgba(9, 43, 89, 0.22), 0 4px 12px rgba(8, 120, 232, 0.25);
+}
+
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38BDF8;
+}
+
+/* Modal Sheet */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 43, 89, 0.55);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1200;
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal-sheet {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 22px 22px 0 0;
+  padding: 20px 18px 28px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+
+/* Colored Shadows & Shine for Deposit / Withdraw Gateway Cards */
+@keyframes gatewayShineSweep {
+  0% { transform: translateX(-140%) skewX(-20deg); opacity: 0; }
+  25% { opacity: 0.7; }
+  60% { opacity: 0.45; }
+  100% { transform: translateX(260%) skewX(-20deg); opacity: 0; }
+}
+
+.gateway-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.16s ease, box-shadow 0.2s ease;
+}
+
+.gateway-card::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -45%;
+  width: 45%;
+  height: 140%;
+  pointer-events: none;
+  animation: gatewayShineSweep 3.8s ease-in-out infinite;
+}
+
+.gateway-card:has(.gateway-logo.usdt) {
+  border-color: rgba(16, 185, 129, 0.24);
+  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.22), 0 4px 12px rgba(16, 185, 129, 0.12);
+}
+
+.gateway-card:has(.gateway-logo.usdt)::after {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0) 0%, rgba(52, 211, 153, 0.32) 50%, rgba(16, 185, 129, 0) 100%);
+}
+
+.gateway-card:has(.gateway-logo.ton) {
+  border-color: rgba(8, 120, 232, 0.24);
+  box-shadow: 0 10px 24px rgba(8, 120, 232, 0.22), 0 4px 12px rgba(8, 120, 232, 0.12);
+}
+
+.gateway-card:has(.gateway-logo.ton)::after {
+  background: linear-gradient(90deg, rgba(8, 120, 232, 0) 0%, rgba(96, 165, 250, 0.34) 50%, rgba(8, 120, 232, 0) 100%);
+}
+
+/* Upgraded Notification Toast with Badge & Bottom Loading Bar */
+@keyframes toastProgressShrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.toast-banner {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-150%);
+  background: #FFFFFF;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px 16px 15px;
+  min-width: 280px;
+  max-width: 92%;
+  width: 390px;
+  box-shadow: 0 12px 28px rgba(9, 43, 89, 0.16);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  z-index: 2500;
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  text-align: left;
+}
+
+.toast-banner.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.toast-icon-badge.reward {
+  background: linear-gradient(135deg, #FBBF24, #F59E0B);
+  color: #FFFFFF;
+  box-shadow: 0 6px 14px rgba(245, 158, 11, 0.32);
+}
+
+.toast-icon-badge.success {
+  background: linear-gradient(135deg, #34D399, #10B981);
+  color: #FFFFFF;
+  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.32);
+}
+
+.toast-icon-badge.info {
+  background: linear-gradient(135deg, #60A5FA, #0878E8);
+  color: #FFFFFF;
+  box-shadow: 0 6px 14px rgba(8, 120, 232, 0.28);
+}
+
+.toast-message-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  flex: 1;
+}
+
+.toast-progress-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: transparent;
+}
+
+.toast-progress-fill {
+  height: 100%;
+  width: 100%;
+}
+
+.toast-banner.show .toast-progress-fill {
+  animation: toastProgressShrink 3s linear forwards;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 22px 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast-banner"></div>
+
+<div class="app-container">
+  <!-- Top Brand & Language Bar -->
+  <div class="top-bar">
+    <div class="brand-pill">
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="10" fill="#0878E8"/>
+        <path d="M18 7L27.5 13.5L18 29L8.5 13.5L18 7Z" stroke="white" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M13.5 14.5L22.5 21.5M22.5 14.5L13.5 21.5" stroke="#93C5FD" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <div class="brand-name">TONX <span>CRYPTO</span></div>
+    </div>
+    <button class="lang-pill" onclick="toggleLanguage()">
+      <span id="langFlag">🇬🇧</span>
+      <span id="langText">English</span>
+      <i class="fa-solid fa-chevron-down" style="font-size:10px;color:var(--muted)"></i>
+    </button>
+  </div>
+
+  <!-- ==========================================
+       TAB 1: MINING DASHBOARD
+       ========================================== -->
+  <section id="tab-mining" class="tab-view active">
+    <div class="user-header">
+      <div class="user-info-left">
+        <div class="avatar-circle" id="userAvatar">R</div>
+        <div>
+          <div class="welcome-label">Welcome back</div>
+          <div class="user-display-name" id="userDisplayName">Rehan</div>
+        </div>
+      </div>
+      <div class="active-cards-badge" id="activeCardsCountBadge">0 cards mining</div>
+    </div>
+
+    <button class="getting-started-link" onclick="openGettingStarted()">
+      <i class="fa-solid fa-book-open"></i> Getting started
+    </button>
+
+    <div class="hero-balance-card">
+      <div class="hero-sublabel">Total balance</div>
+      <div class="hero-amount" id="heroTotalBalance">$0.000</div>
+      <div class="hero-daily-rate">Earning <strong id="heroDailyRate">$0.00</strong> per day</div>
+      <div class="hero-actions">
+        <button class="btn-hero-white" onclick="switchTab('deposit')">
+          <i class="fa-solid fa-arrow-down"></i> Deposit
+        </button>
+        <button class="btn-hero-outline" onclick="switchTab('withdraw')">
+          <i class="fa-solid fa-arrow-up"></i> Withdraw
+        </button>
+      </div>
+    </div>
+
+    <div class="free-card-cta" id="freeBronzeBanner" onclick="openClaimBronzeModal()">
+      <div style="color:var(--primary);font-size:20px;margin-bottom:6px;"><i class="fa-solid fa-hammer"></i></div>
+      <h3>Claim your free Bronze card</h3>
+      <p>Mine $0.10 every day &rarr;</p>
+    </div>
+
+    <div class="mining-live-panel">
+      <div class="live-panel-top">
+        <span style="font-weight:700;font-size:13.5px;">Live Mining Accrual</span>
+        <span class="live-indicator" id="miningStatusPill" style="background:var(--bg-sec);color:var(--muted);">
+          <span class="pulse-dot"></span> <span id="miningStatusText">Idle</span>
+        </span>
+      </div>
+      <div class="accrual-row">
+        <div>
+          <div class="accrual-value" id="liveMinedAmount">$0.000000</div>
+          <div style="font-size:11.5px;color:var(--muted);">Pending mining yield</div>
+        </div>
+        <button class="btn-collect" id="btnCollectMining" onclick="collectMiningRewards()" disabled>Collect</button>
+      </div>
+      <div id="dashboardActiveCardsList"></div>
+    </div>
+
+    <div class="section-header-row">
+      <div class="section-title">Activity</div>
+      <span style="font-size:12px;color:var(--muted);">Recent ledger</span>
+    </div>
+    <div class="surface-card" id="activityFeedContainer">
+      <div class="empty-state">No activity yet</div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       TAB 2: MINING CARDS
+       ========================================== -->
+  <section id="tab-cards" class="tab-view">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <h1 class="page-title">Mining Cards</h1>
+      <div class="balance-chip" id="cardsTabBalance">$0.000</div>
+    </div>
+    <p class="page-step-sub">Every card is a mining package that earns daily</p>
+
+    <div class="surface-card" id="myOwnedCardsSummary" style="display:none;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <strong style="font-size:13.5px;">My Mining Cards (<span id="ownedCardsCounter">0</span>)</strong>
+        <span style="font-size:12px;color:var(--primary);font-weight:600;">Active</span>
+      </div>
+      <div id="ownedCardsDetailList"></div>
+    </div>
+
+    <div id="cardsCatalogContainer"></div>
+  </section>
+
+  <!-- ==========================================
+       TAB 3: TASKS & MILESTONES
+       ========================================== -->
+  <section id="tab-tasks" class="tab-view">
+    <h1 class="page-title" style="margin-bottom:12px;">Tasks & Rewards</h1>
+
+    <div class="surface-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <strong style="font-size:14.5px;">Official channel</strong>
+        <span style="font-size:11px;color:var(--muted);background:var(--bg-sec);padding:3px 9px;border-radius:999px;">Optional</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+          <div style="width:38px;height:38px;border-radius:12px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid fa-bullhorn"></i>
+          </div>
+          <div style="min-width:0;flex:1;">
+            <div style="font-weight:700;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="officialChannelHandle">Join https://t.me/usersonlyclaimcode</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.3;">Optional channel updates &amp; claim codes</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;" id="channelTaskActions">
+          <button style="background:var(--primary);color:#fff;border:none;border-radius:9px;padding:7px 14px;font-weight:600;font-size:12px;white-space:nowrap;cursor:pointer;" onclick="joinOfficialChannel()">Join</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="surface-card" style="padding:0;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#1084F5,#0878E8);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:14.5px;">Partner tasks</div>
+          <div style="font-size:11.5px;opacity:0.9;">Complete a task and earn rewards</div>
+        </div>
+      </div>
+      <div style="padding:12px 14px;" id="partnerTasksList"></div>
+    </div>
+
+    <div class="surface-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--bg-sec);color:var(--primary);display:flex;align-items:center;justify-content:center;">
+            <i class="fa-regular fa-circle-play"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:14px;">Watch an ad &middot; <span style="color:var(--success);" id="adRewardLabel">$0.0001</span></div>
+            <div style="font-size:11.5px;color:var(--muted);">Watch the full ad &middot; <strong id="adCounterLabel">0 / 20</strong></div>
+          </div>
+        </div>
+        <button style="background:var(--primary);color:#fff;border:none;border-radius:9px;padding:7px 14px;font-weight:600;font-size:12px;cursor:pointer;" id="btnWatchAd" onclick="startRewardedAd()">Watch</button>
+      </div>
+    </div>
+
+    <div class="surface-card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <strong style="font-size:14.5px;">Referral milestones</strong>
+        <span style="font-size:12px;color:var(--muted);">Verified: <strong id="milestoneVerifiedCount" style="color:var(--text);">0</strong></span>
+      </div>
+      <div id="milestonesListContainer"></div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       TAB 4: DEPOSIT (MATCHING VIDEO STEP 1 & STEP 2)
+       ========================================== -->
+  <section id="tab-deposit" class="tab-view">
+    <div id="depositStep1">
+      <button class="back-link-btn" onclick="switchTab('mining')">&larr; Home</button>
+      <h1 class="page-title">Deposit</h1>
+      <p class="page-step-sub">Step 1 &middot; Choose your payment gateway</p>
+
+      <div class="gateway-card" onclick="openDepositStep('TON')">
+        <div class="gateway-left">
+          <div class="gateway-logo ton"><i class="fa-solid fa-gem"></i></div>
+          <div>
+            <div style="font-weight:700;font-size:15.5px;">TON <span class="badge-tag blue"><i class="fa-solid fa-bolt"></i> 1-TAP</span></div>
+            <div style="font-size:12px;color:var(--muted);">Tonkeeper &middot; TON network</div>
+            <div style="font-size:12px;font-weight:500;" id="liveTonPriceDisplay">Live price: $5.40 / TON</div>
+            <div style="font-size:11.5px;color:var(--muted);">Minimum $2 &middot; price locked 30 min</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i>
+      </div>
+
+      <div class="gateway-card" onclick="openDepositStep('USDT_BEP20')">
+        <div class="gateway-left">
+          <div class="gateway-logo usdt"><i class="fa-solid fa-dollar-sign"></i></div>
+          <div>
+            <div style="font-weight:700;font-size:15.5px;">USDT <span class="badge-tag green"><i class="fa-solid fa-bolt"></i> AUTO</span></div>
+            <div style="font-size:12px;color:var(--muted);">BEP20 &middot; BNB Smart Chain</div>
+            <div style="font-size:12px;font-weight:500;">1 USDT = $1.00</div>
+            <div style="font-size:11.5px;color:var(--muted);">Minimum $2 &middot; detected automatically</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i>
+      </div>
+
+      <div class="info-banner-box">
+        <i class="fa-solid fa-shield-halved" style="color:var(--primary);margin-top:2px;"></i>
+        <div>Next you enter the amount. An invoice is created only after that, and it is valid for 30 minutes.</div>
+      </div>
+
+      <div class="section-header-row">
+        <div class="section-title">Deposit History</div>
+      </div>
+      <div class="surface-card" id="depositHistoryList">
+        <div class="empty-state">No deposits recorded yet</div>
+      </div>
+    </div>
+
+    <!-- Deposit Step 2A: TON Lock Price & Create Invoice (Video 0:04 - 0:07) -->
+    <div id="depositStepTon" style="display:none;">
+      <button class="back-link-btn" onclick="backToDepositStep1()">&larr; Change gateway</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h1 class="page-title">Deposit TON</h1>
+          <p class="page-step-sub" style="margin-bottom:8px;">Step 2 &middot; Enter amount, then pay the invoice</p>
+        </div>
+        <div class="gateway-logo ton" style="width:42px;height:42px;font-size:19px;"><i class="fa-solid fa-gem"></i></div>
+      </div>
+
+      <div class="surface-card">
+        <div class="form-label-row">
+          <span>Amount (USD)</span>
+          <span style="color:var(--success);font-size:11.5px;" id="tonRateBadge">&bull; Live: 1 TON = $5.40</span>
+        </div>
+        <input type="number" id="tonUsdAmountInput" class="form-input" min="2" max="100000" step="1" placeholder="Min $2" oninput="onTonUsdChange()">
+
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:8px;" id="tonEquivalentText">&approx; 0.0000TON</div>
+
+        <div class="withdraw-sub-grid">
+          <div class="withdraw-mini-box"><span>Minimum</span><strong id="tonMinLabel">$2</strong></div>
+          <div class="withdraw-mini-box"><span>Maximum</span><strong>$100,000.00</strong></div>
+          <div class="withdraw-mini-box"><span>Rate Lock</span><strong>30 min</strong></div>
+        </div>
+
+        <div class="preset-grid">
+          <button type="button" class="preset-btn" onclick="selectTonPreset(5, this)">$5</button>
+          <button type="button" class="preset-btn" onclick="selectTonPreset(10, this)">$10</button>
+          <button type="button" class="preset-btn" onclick="selectTonPreset(25, this)">$25</button>
+          <button type="button" class="preset-btn" onclick="selectTonPreset(50, this)">$50</button>
+          <button type="button" class="preset-btn" onclick="selectTonPreset(100, this)">$100</button>
+        </div>
+      </div>
+
+      <button class="btn-primary-full" id="btnLockTonInvoice" onclick="lockAndCreateTonInvoice()">
+        <i class="fa-solid fa-lock"></i> Lock price & create invoice
+      </button>
+
+      <div class="status-waiting-box">
+        <span class="blue-dot"></span>
+        <div style="font-size:12px;color:var(--text);">
+          The live TON price is locked for <strong>30 minutes</strong>. Pay with Tonkeeper in one tap &mdash; amount, address and memo are filled automatically.
+        </div>
+      </div>
+
+      <div id="tonCreatedInvoiceBox" style="display:none;"></div>
+    </div>
+
+    <!-- Deposit Step 2B: USDT BEP20 Personal Wallet + QR + Check Payment (Video 0:15 - 0:21 & Screenshot) -->
+    <div id="depositStepUsdt" style="display:none;">
+      <button class="back-link-btn" onclick="backToDepositStep1()">&larr; Change gateway</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h1 class="page-title">Deposit USDT</h1>
+          <p class="page-step-sub" style="margin-bottom:8px;">BNB Smart Chain &middot; Personal deposit address</p>
+        </div>
+        <div class="gateway-logo usdt" style="width:42px;height:42px;font-size:19px;"><i class="fa-solid fa-dollar-sign"></i></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <i class="fa-solid fa-shield-halved" style="color:var(--success);font-size:16px;"></i>
+        <strong style="font-size:15px;">Your personal deposit wallet</strong>
+      </div>
+
+      <div class="qr-box">
+        <img id="bep20QrImg" src="" alt="BEP20 Deposit QR">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;">USDT &middot; BNB SMART CHAIN (BEP20)</div>
+        <div class="addr-copy-box">
+          <span id="bep20PersonalAddress">0xEF8121e4CC048c8b693C70B8BC4707b74A26458D</span>
+          <button class="btn-copy-icon" onclick="copyText(document.getElementById('bep20PersonalAddress').textContent, 'BEP20 address copied!')">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="status-waiting-box">
+        <span class="blue-dot"></span>
+        <div>
+          <div style="font-weight:700;font-size:13px;">Waiting for payment...</div>
+          <div style="font-size:11.5px;color:var(--muted);">Deposits are detected and credited automatically.</div>
+        </div>
+      </div>
+
+      <button class="btn-primary-full" id="btnCheckPayment" onclick="checkBep20Payment()">
+        <i class="fa-solid fa-rotate"></i> Check payment
+      </button>
+
+      <div class="surface-card">
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;">
+          <span style="color:var(--muted);">Minimum:</span>
+          <strong id="usdtMinDisplay">$2 USDT</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;">
+          <span style="color:var(--muted);">Confirmations</span>
+          <strong>15</strong>
+        </div>
+      </div>
+
+      <div class="danger-text">Send only USDT on BNB Smart Chain (BEP20).</div>
+      <p style="font-size:11.5px;color:var(--muted);line-height:1.45;">
+        This address stays assigned to your account. Send any amount above the minimum; no invoice or transaction hash is required.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       TAB 5: WITHDRAW (EXACT VIDEO FLOW STEP 1 & STEP 2)
+       ========================================== -->
+  <section id="tab-withdraw" class="tab-view">
+    <div id="withdrawStep1">
+      <button class="back-link-btn" onclick="switchTab('mining')">&larr; Home</button>
+      <h1 class="page-title">Withdraw</h1>
+      <p class="page-step-sub">Step 1 &middot; Choose your payout gateway</p>
+
+      <div class="info-banner-box">
+        <i class="fa-solid fa-shield-halved" style="color:var(--primary);margin-top:2px;"></i>
+        <div>
+          <strong style="color:var(--text);display:block;margin-bottom:2px;">Secure & fair payment processing</strong>
+          Withdrawal requests are recorded automatically. Payouts are currently reviewed and sent manually by our team. Account and payment details are checked to protect users and ensure fair treatment. Processing times may vary; you will receive a bot notification when your payment is completed.
+        </div>
+      </div>
+
+      <div class="warning-banner-box">
+        At least <strong>$2 in confirmed deposits</strong> is required before any withdrawal, including referral and mining earnings.<br><br>
+        Only earned funds can be withdrawn. Deposit balance cannot be withdrawn; the amount and fee must fit your withdrawable earnings.<br><br>
+        <a href="#" style="color:var(--primary);font-weight:600;text-decoration:none;" onclick="event.preventDefault(); switchTab('deposit');">Deposit &rarr;</a>
+      </div>
+
+      <div class="surface-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:12px;color:var(--muted);">Available balance</div>
+            <div style="font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;" id="withdrawAvailBal">$0.000</div>
+          </div>
+          <div style="text-align:right;font-size:12px;color:var(--muted);">
+            <div>Min <strong id="cfgMinWithdraw">$1</strong></div>
+            <div>Fee <strong id="cfgFeeWithdraw">$0.20</strong></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+          Withdrawable balance: <strong style="color:var(--text);" id="withdrawableEarnedBal">$0.0000</strong>
+        </div>
+      </div>
+
+      <div class="gateway-card" onclick="openWithdrawStep2('USDT_BEP20')">
+        <div class="gateway-left">
+          <div class="gateway-logo usdt"><i class="fa-solid fa-dollar-sign"></i></div>
+          <div>
+            <div style="font-weight:700;font-size:15.5px;">USDT BEP20</div>
+            <div style="font-size:12px;color:var(--muted);">BEP20 &middot; BNB Smart Chain</div>
+            <div style="font-size:11.5px;color:var(--muted);">Paid out in USDT 1:1 &middot; Min $1 &middot; fee $0.20 &middot; reviewed manually</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i>
+      </div>
+
+      <div class="gateway-card" onclick="openWithdrawStep2('USDT_TON')">
+        <div class="gateway-left">
+          <div class="gateway-logo ton"><i class="fa-solid fa-gem"></i></div>
+          <div>
+            <div style="font-weight:700;font-size:15.5px;">USDT TON</div>
+            <div style="font-size:12px;color:var(--muted);">TON network &middot; Tonkeeper</div>
+            <div style="font-size:11.5px;color:var(--muted);">Paid out in USDT 1:1 &middot; Min $1 &middot; fee $0.20 &middot; reviewed manually</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i>
+      </div>
+
+      <div class="section-header-row">
+        <div class="section-title">Withdrawal History</div>
+      </div>
+      <div class="surface-card" id="withdrawHistoryList">
+        <div class="empty-state">No withdrawal requests yet</div>
+      </div>
+    </div>
+
+    <!-- Withdraw Step 2 (Exact Layout from Video 0:34 - 1:12) -->
+    <div id="withdrawStep2" style="display:none;">
+      <button class="back-link-btn" onclick="backToWithdrawStep1()">&larr; Change gateway</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h1 class="page-title" id="wdrStep2Title">Withdraw USDT BEP20</h1>
+          <p class="page-step-sub" id="wdrStep2Sub">Step 2 &middot; BNB Smart Chain</p>
+        </div>
+        <div id="wdrStep2Badge" class="gateway-logo usdt" style="width:42px;height:42px;font-size:19px;"><i class="fa-solid fa-dollar-sign"></i></div>
+      </div>
+
+      <div class="surface-card">
+        <div style="font-size:12px;color:var(--muted);">Available balance</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;" id="wdr2AvailBal">$0.000</div>
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+          Withdrawable balance: <strong style="color:var(--text);" id="wdr2WithdrawableBal">$0.0000</strong>
+        </div>
+      </div>
+
+      <div class="surface-card">
+        <div style="font-weight:600;font-size:13px;margin-bottom:8px;" id="wdrAddrLabel">
+          <i class="fa-solid fa-dollar-sign" style="color:var(--success)"></i> USDT BEP20 address
+        </div>
+        <input type="text" id="withdrawAddressInput" class="form-input" placeholder="0x...">
+
+        <div class="form-label-row">
+          <span>Amount (USD)</span>
+          <span style="color:var(--primary);cursor:pointer;font-weight:700;" onclick="applyWithdrawMax()">MAX</span>
+        </div>
+        <input type="number" id="withdrawAmountInput" class="form-input" min="1" step="0.01" placeholder="Min $1" oninput="updateWithdrawCalc()">
+
+        <div class="withdraw-sub-grid">
+          <div class="withdraw-mini-box"><span>Minimum</span><strong id="wdr2MinText">$1</strong></div>
+          <div class="withdraw-mini-box"><span>Maximum</span><strong id="wdr2MaxText">$0.00</strong></div>
+          <div class="withdraw-mini-box"><span>Fee</span><strong id="wdr2FeeText">$0.20</strong></div>
+        </div>
+
+        <div class="danger-text" id="wdrDepositRequirementNote">
+          At least $2 in confirmed deposits is required before any withdrawal, including referral and mining earnings.
+        </div>
+      </div>
+
+      <div class="summary-lines">
+        <div class="summary-line-row">
+          <span style="color:var(--muted);">You receive</span>
+          <strong id="wdrYouReceive">$0.00</strong>
+        </div>
+        <div class="summary-line-row">
+          <span style="color:var(--muted);">Network fee</span>
+          <strong id="wdrNetworkFee">$0.20</strong>
+        </div>
+        <div class="summary-line-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px;">
+          <span style="font-weight:700;">Total deducted</span>
+          <strong id="wdrTotalDeducted">$0.20</strong>
+        </div>
+      </div>
+
+      <button class="btn-primary-full" id="btnSubmitWithdraw" onclick="submitWithdrawalRequest()">
+        <span id="wdrSubmitLabel">Withdraw</span>
+      </button>
+
+      <div class="info-banner-box">
+        <i class="fa-solid fa-shield-halved" style="color:var(--primary);margin-top:2px;"></i>
+        <div>Double-check the address and network. Payments sent to a wrong address can't be recovered.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       TAB 6: REFERRAL PROGRAM
+       ========================================== -->
+  <section id="tab-referral" class="tab-view">
+    <div class="referral-hero">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:1px;opacity:0.85;">PARTNER PROGRAM</div>
+      <div style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;line-height:1.2;margin-top:2px;">Invite friends.<br>Earn on every one.</div>
+      <div class="ref-grid-2">
+        <div class="ref-glass-box">
+          <div style="font-family:'Poppins',sans-serif;font-size:21px;font-weight:700;">$0.01</div>
+          <div style="font-size:11px;opacity:0.9;">per verified friend</div>
+        </div>
+        <div class="ref-glass-box">
+          <div style="font-family:'Poppins',sans-serif;font-size:21px;font-weight:700;">15%</div>
+          <div style="font-size:11px;opacity:0.9;">card purchase commission</div>
+        </div>
+      </div>
+      <div class="ref-grid-2" style="margin-bottom:10px;">
+        <div class="ref-glass-box">
+          <div style="font-size:10px;opacity:0.8;text-transform:uppercase;">Total Earned</div>
+          <div style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;" id="refTotalEarned">$0.00</div>
+        </div>
+        <div class="ref-glass-box">
+          <div style="font-size:10px;opacity:0.8;text-transform:uppercase;">Team Size</div>
+          <div style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;" id="refTeamSize">0</div>
+        </div>
+      </div>
+      <button class="btn-hero-white" style="width:100%;" onclick="shareInviteLink()">
+        <i class="fa-regular fa-paper-plane"></i> Share invite link
+      </button>
+    </div>
+
+    <div class="surface-card">
+      <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;">Your personal link</div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;background:var(--bg-sec);border:1px solid var(--border);border-radius:10px;padding:9px 11px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="userReferralUrl">https://t.me/TonXCryptoBot?start=ref_Rehan</div>
+        <button style="width:38px;height:38px;border-radius:10px;background:var(--primary);color:#fff;border:none;cursor:pointer;" onclick="copyText(document.getElementById('userReferralUrl').textContent, 'Referral link copied!')">
+          <i class="fa-regular fa-copy"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="surface-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:12px;color:var(--muted);">Commission ready</div>
+          <div style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;color:var(--success);" id="refCommissionReady">$0.0000</div>
+        </div>
+        <button class="btn-collect" id="btnCollectCommission" onclick="collectReferralCommission()" disabled>Collect</button>
+      </div>
+      <div class="ref-stats-3">
+        <div><div style="font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;" id="refCountInvited">0</div><div style="font-size:10px;color:var(--muted);">INVITED</div></div>
+        <div><div style="font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;color:var(--success);" id="refCountVerified">0</div><div style="font-size:10px;color:var(--muted);">VERIFIED</div></div>
+        <div><div style="font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;" id="refCountPending">0</div><div style="font-size:10px;color:var(--muted);">PENDING</div></div>
+      </div>
+    </div>
+
+    <div class="section-header-row"><div class="section-title">Your team</div></div>
+    <div class="surface-card" id="referralTeamList">
+      <div class="empty-state">No one yet &mdash; share your link to start</div>
+    </div>
+  </section>
+</div>
+
+<!-- 6-Tab Floating Blue Navigation -->
+<div class="floating-nav-wrap">
+  <nav class="floating-nav">
+    <button class="nav-item active" data-tab="mining" onclick="switchTab('mining')"><i class="fa-regular fa-gem"></i><span>Mining</span></button>
+    <button class="nav-item" data-tab="cards" onclick="switchTab('cards')"><i class="fa-regular fa-credit-card"></i><span>Cards</span></button>
+    <button class="nav-item" data-tab="tasks" onclick="switchTab('tasks')"><i class="fa-regular fa-star"></i><span>Tasks</span></button>
+    <button class="nav-item" data-tab="deposit" onclick="switchTab('deposit')"><i class="fa-solid fa-circle-arrow-down"></i><span>Deposit</span></button>
+    <button class="nav-item" data-tab="withdraw" onclick="switchTab('withdraw')"><i class="fa-solid fa-arrow-up-from-bracket"></i><span>Withdraw</span></button>
+    <button class="nav-item" data-tab="referral" onclick="switchTab('referral')"><i class="fa-solid fa-user-group"></i><span>Referral</span></button>
+  </nav>
+</div>
+
+<!-- Modal Sheet -->
+<div id="genericModal" class="modal-backdrop" onclick="if(event.target.id==='genericModal') closeModal()">
+  <div class="modal-sheet" id="modalContent"></div>
+</div>
+
+<script>
+const CONFIG = {
+  firebase: {
+    apiKey: "AIzaSyC_UufZMuNnWYPbWhXVG5eSk1N8oeLJiis",
+    authDomain: "tonx-crypto.firebaseapp.com",
+    databaseURL: "https://tonx-crypto-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "tonx-crypto",
+    storageBucket: "tonx-crypto.firebasestorage.app",
+    messagingSenderId: "724869432968",
+    appId: "1:724869432968:web:895240a4e662fe9b52013d"
+  },
+  botUsername: "TonXCryptoBot",
+  defaultBep20Address: "0xEF8121e4CC048c8b693C70B8BC4707b74A26458D",
+  defaultTonAddress: "UQBmTonXCryptoReceivingAddressExample123456"
+};
+
+const DEFAULT_CARDS = [
+  { id: "bronze", name: "Bronze", price: 0, dailyReward: 0.10, durationDays: 30, badge: "FREE", imageUrl: "https://i.ibb.co/SDs8zk1w/image.png", enabled: true },
+  { id: "silver", name: "Silver", price: 3, dailyReward: 0.36, durationDays: 30, badge: "", imageUrl: "https://i.ibb.co/TpLtbyZ/image.png", enabled: true },
+  { id: "copper", name: "Copper", price: 5, dailyReward: 0.70, durationDays: 30, badge: "", imageUrl: "https://i.ibb.co/Kcfz2v1y/image.png", enabled: true },
+  { id: "ruby", name: "Ruby", price: 10, dailyReward: 1.60, durationDays: 30, badge: "", imageUrl: "https://i.ibb.co/kgPwVSWL/image.png", enabled: true },
+  { id: "sapphire", name: "Sapphire", price: 25, dailyReward: 4.50, durationDays: 30, badge: "POPULAR", imageUrl: "https://i.ibb.co/NnZBJFmz/image.png", enabled: true },
+  { id: "platinum", name: "Platinum Limited", price: 50, dailyReward: 10.00, durationDays: 30, badge: "LIMITED EDITION · 50", imageUrl: "https://i.ibb.co/kV85Pyfw/image.png", enabled: true },
+  { id: "gold", name: "Gold", price: 100, dailyReward: 22.00, durationDays: 30, badge: "RECOMMENDED", imageUrl: "https://i.ibb.co/Fk5HvWv9/image.png", enabled: true },
+  { id: "titan", name: "Titan", price: 150, dailyReward: 33.00, durationDays: 30, badge: "RECOMMENDED", imageUrl: "https://i.ibb.co/gFTNZ96c/image.png", enabled: true },
+  { id: "emerald", name: "Emerald Limited", price: 200, dailyReward: 48.00, durationDays: 30, badge: "LIMITED EDITION · 100", imageUrl: "https://i.ibb.co/PZ3NVwZ4/image.png", enabled: true },
+  { id: "obsidian", name: "Obsidian", price: 250, dailyReward: 60.00, durationDays: 30, badge: "RECOMMENDED", imageUrl: "https://i.ibb.co/gM8Ks4WR/image.png", enabled: true },
+  { id: "diamond", name: "Diamond", price: 500, dailyReward: 130.00, durationDays: 30, badge: "RECOMMENDED", imageUrl: "https://i.ibb.co/ccDsTpLb/image.png", enabled: true }
+];
+
+const DEFAULT_MILESTONES = [
+  { id: "m10", target: 10, reward: 0.10 },
+  { id: "m50", target: 50, reward: 0.50 },
+  { id: "m200", target: 200, reward: 1.00 },
+  { id: "m500", target: 500, reward: 5.00 },
+  { id: "m1000", target: 1000, reward: 10.00 },
+  { id: "m5000", target: 5000, reward: 50.00 }
+];
+
+const state = {
+  tg: null,
+  db: null,
+  user: { id: "guest_user", first_name: "No name", username: "", photo_url: "" },
+  wallet: {
+    totalBalance: 0,
+    depositBalance: 0,
+    earnedBalance: 0,
+    confirmedDepositsTotal: 0,
+    commissionReady: 0,
+    commissionEarnedTotal: 0
+  },
+  adminConfig: {
+    tonUsdRate: 5.40,
+    minDepositUsd: 2.00,
+    minWithdrawUsd: 1.00,
+    withdrawFeeUsd: 0.20,
+    minConfirmedDepositForWithdraw: 2.00,
+    adRewardUsd: 0.0001,
+    adDailyLimit: 20,
+    channelHandle: "https://t.me/usersonlyclaimcode"
+  },
+  cardsCatalog: [...DEFAULT_CARDS],
+  userCards: [],
+  channelVerified: false,
+  freeBronzeClaimed: false,
+  adsWatchedToday: 0,
+  tasks: [],
+  completedTaskIds: {},
+  milestones: [...DEFAULT_MILESTONES],
+  claimedMilestones: {},
+  referrals: [],
+  transactions: [],
+  deposits: [],
+  withdrawals: [],
+  selectedWithdrawNetwork: "USDT_BEP20",
+  lang: "en"
+};
+
+function initApp() {
+  if (window.Telegram && window.Telegram.WebApp) {
+    state.tg = window.Telegram.WebApp;
+    state.tg.ready();
+    state.tg.expand();
+    if (state.tg.initDataUnsafe && state.tg.initDataUnsafe.user) {
+      const u = state.tg.initDataUnsafe.user;
+      const displayLabel = u.username ? ("@" + u.username) : (u.first_name || "No name");
+      state.user = {
+        id: String(u.id),
+        first_name: displayLabel,
+        username: u.username || "",
+        photo_url: u.photo_url || ""
+      };
+    }
+  }
+
+  renderUserIdentity();
+
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(CONFIG.firebase);
+    state.db = firebase.database();
+    firebase.auth().signInAnonymously().catch(() => {});
+    bindFirebaseListeners();
+    ensureUserRecordExists();
+  } catch (err) {
+    console.error("Firebase init:", err);
+  }
+
+  setInterval(tickLiveMining, 1000);
+  renderAll();
+}
+
+function ensureUserRecordExists() {
+  if (!state.db) return;
+  const uid = state.user.id;
+  const now = Date.now();
+  state.db.ref(`users/${uid}`).transaction((curr) => {
+    if (curr) return { ...curr, lastSeenAt: now, first_name: state.user.first_name };
+    return {
+      telegramId: uid,
+      first_name: state.user.first_name,
+      username: state.user.username,
+      status: "active",
+      channelVerified: false,
+      freeBronzeClaimed: false,
+      createdAt: now,
+      lastSeenAt: now
+    };
+  });
+
+  state.db.ref(`wallets/${uid}`).transaction((curr) => curr || {
+    totalBalance: 0,
+    depositBalance: 0,
+    earnedBalance: 0,
+    confirmedDepositsTotal: 0,
+    commissionReady: 0,
+    commissionEarnedTotal: 0
+  });
+}
+
+function bindFirebaseListeners() {
+  const uid = state.user.id;
+  const db = state.db;
+
+  db.ref("adminConfig").on("value", s => {
+    if (s.exists()) {
+      state.adminConfig = { ...state.adminConfig, ...s.val() };
+      renderAll();
+    }
+  });
+
+  db.ref("cards").on("value", s => {
+    if (s.exists()) {
+      const arr = [];
+      s.forEach(c => {
+        const v = c.val();
+        if (v.enabled !== false) arr.push({ id: c.key, ...v });
+      });
+      if (arr.length) {
+        const orderIds = ["bronze","silver","copper","ruby","sapphire","platinum","gold","titan","emerald","obsidian","diamond"];
+        const hdMap = Object.fromEntries(DEFAULT_CARDS.map(d => [d.id, d.imageUrl]));
+        state.cardsCatalog = arr
+          .map(item => ({ ...item, imageUrl: hdMap[item.id] || item.imageUrl }))
+          .sort((a, b) => {
+            const ia = orderIds.indexOf(a.id);
+            const ib = orderIds.indexOf(b.id);
+            return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+          });
+      }
+      renderCardsCatalog();
+  attachInteractiveCardTilt();
+  applyCardColorShadows();
+    }
+  });
+
+  db.ref(`wallets/${uid}`).on("value", s => {
+    if (s.exists()) {
+      state.wallet = { ...state.wallet, ...s.val() };
+      renderAll();
+    }
+  });
+
+  db.ref(`users/${uid}`).on("value", s => {
+    if (s.exists()) {
+      const u = s.val();
+      state.channelVerified = !!u.channelVerified;
+      state.freeBronzeClaimed = !!u.freeBronzeClaimed;
+      const dayKey = new Date().toISOString().slice(0, 10);
+      state.adsWatchedToday = (u.adStats && u.adStats[dayKey]) || 0;
+      renderAll();
+    }
+  });
+
+  db.ref(`userCards/${uid}`).on("value", s => {
+    const arr = [];
+    s.forEach(c => arr.push({ id: c.key, ...c.val() }));
+    state.userCards = arr;
+    renderAll();
+  });
+
+  db.ref("tasks").on("value", s => {
+    const arr = [];
+    s.forEach(c => {
+      const v = c.val();
+      if (v.enabled !== false) arr.push({ id: c.key, ...v });
+    });
+    state.tasks = arr;
+    renderTasksTab();
+  });
+
+  db.ref(`taskCompletions/${uid}`).on("value", s => {
+    state.completedTaskIds = s.val() || {};
+    renderTasksTab();
+  });
+
+  db.ref(`milestones/${uid}`).on("value", s => {
+    state.claimedMilestones = s.val() || {};
+    renderTasksTab();
+  });
+
+  db.ref(`referrals/${uid}`).on("value", s => {
+    const arr = [];
+    s.forEach(c => arr.push({ id: c.key, ...c.val() }));
+    state.referrals = arr;
+    renderReferralTab();
+    renderTasksTab();
+  });
+
+  db.ref(`transactions/${uid}`).limitToLast(20).on("value", s => {
+    const arr = [];
+    s.forEach(c => arr.push({ id: c.key, ...c.val() }));
+    state.transactions = arr.reverse();
+    renderActivityFeed();
+  });
+
+  db.ref(`deposits/${uid}`).limitToLast(15).on("value", s => {
+    const arr = [];
+    s.forEach(c => arr.push({ id: c.key, ...c.val() }));
+    state.deposits = arr.reverse();
+    renderDepositHistory();
+  });
+
+  db.ref(`withdrawals/${uid}`).limitToLast(15).on("value", s => {
+    const arr = [];
+    s.forEach(c => arr.push({ id: c.key, ...c.val() }));
+    state.withdrawals = arr.reverse();
+    renderWithdrawHistory();
+  });
+}
+
+function switchTab(tab) {
+  document.querySelectorAll(".tab-view").forEach(v => v.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document.getElementById(`tab-${tab}`).classList.add("active");
+  document.querySelector(`.nav-item[data-tab="${tab}"]`).classList.add("active");
+
+  if (tab === "deposit") backToDepositStep1();
+  if (tab === "withdraw") backToWithdrawStep1();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function playSoftNotificationSound(kind = "info") {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    const baseFreq = kind === "reward" ? 740 : (kind === "success" ? 660 : 587.33);
+    osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.25, ctx.currentTime + 0.14);
+
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.24);
+  } catch (e) {}
+}
+
+function showToast(msg, variant = "info") {
+  const el = document.getElementById("toast");
+  let badgeClass = "info";
+  let iconHtml = '<i class="fa-solid fa-bell"></i>';
+  let barColor = "#0878E8";
+
+  if (variant === "reward" || /added to your balance/i.test(msg)) {
+    badgeClass = "reward";
+    iconHtml = '<i class="fa-solid fa-coins"></i>';
+    barColor = "#F59E0B";
+  } else if (variant === "success" || /copied/i.test(msg)) {
+    badgeClass = "success";
+    iconHtml = '<i class="fa-solid fa-check"></i>';
+    barColor = "#10B981";
+  }
+
+  el.innerHTML = `
+    <div class="toast-icon-badge ${badgeClass}">${iconHtml}</div>
+    <div class="toast-message-text">${msg}</div>
+    <div class="toast-progress-bar">
+      <div class="toast-progress-fill" style="background:${barColor};"></div>
+    </div>
+  `;
+
+  el.classList.remove("show");
+  void el.offsetWidth;
+  el.classList.add("show");
+  playSoftNotificationSound(badgeClass);
+
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => el.classList.remove("show"), 3000);
+}
+
+function copyText(txt, msg) {
+  navigator.clipboard.writeText(txt).catch(() => {});
+  showToast(msg || "Link copied", "success");
+}
+
+function openModal(html) {
+  document.getElementById("modalContent").innerHTML = html;
+  document.getElementById("genericModal").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("genericModal").classList.remove("open");
+}
+
+function renderUserIdentity() {
+  const label = state.user.username ? ("@" + state.user.username) : (state.user.first_name || "No name");
+  document.getElementById("userDisplayName").textContent = label;
+  const av = document.getElementById("userAvatar");
+  if (state.user.photo_url) {
+    av.innerHTML = `<img src="${state.user.photo_url}" alt="Avatar" onerror="this.parentElement.textContent='${label.replace(/^@/, "").charAt(0).toUpperCase()}'">`;
+  } else {
+    const cleanChar = label.replace(/^@/, "").charAt(0).toUpperCase() || "N";
+    av.textContent = cleanChar;
+  }
+  document.getElementById("userReferralUrl").textContent = `https://t.me/${CONFIG.botUsername}?start=ref_${state.user.id}`;
+}
+
+/* Mining Accrual & Collection */
+function calculatePendingMining() {
+  const now = Date.now();
+  let totalPending = 0;
+  let dailyRate = 0;
+  let activeCount = 0;
+
+  state.userCards.forEach(c => {
+    if (c.status !== "active") return;
+    const exp = Number(c.expiresAt || 0);
+    const last = Number(c.lastCollectedAt || c.activatedAt || now);
+    const end = Math.min(now, exp);
+    if (now < exp) {
+      activeCount++;
+      dailyRate += Number(c.dailyReward || 0);
+    }
+    if (end > last) {
+      totalPending += ((end - last) / 1000) * (Number(c.dailyReward || 0) / 86400);
+    }
+  });
+  return { totalPending, dailyRate, activeCount };
+}
+
+function tickLiveMining() {
+  const { totalPending, dailyRate, activeCount } = calculatePendingMining();
+  document.getElementById("activeCardsCountBadge").textContent = `${activeCount} card${activeCount === 1 ? "" : "s"} mining`;
+  document.getElementById("heroDailyRate").textContent = `$${dailyRate.toFixed(2)}`;
+  document.getElementById("liveMinedAmount").textContent = `$${totalPending.toFixed(6)}`;
+
+  const pill = document.getElementById("miningStatusPill");
+  const txt = document.getElementById("miningStatusText");
+  if (activeCount > 0) {
+    pill.style.background = "var(--success-bg)";
+    pill.style.color = "var(--success)";
+    txt.textContent = "Mining Active";
+  } else {
+    pill.style.background = "var(--bg-sec)";
+    pill.style.color = "var(--muted)";
+    txt.textContent = "Idle";
+  }
+
+  document.getElementById("btnCollectMining").disabled = totalPending < 0.00001;
+
+  document.querySelectorAll("[data-card-expires]").forEach(el => {
+    const exp = Number(el.getAttribute("data-card-expires"));
+    const rem = Math.max(0, exp - Date.now());
+    if (rem === 0) el.textContent = "Expired";
+    else {
+      const d = Math.floor(rem / 86400000);
+      const h = Math.floor((rem % 86400000) / 3600000);
+      const m = Math.floor((rem % 3600000) / 60000);
+      const s = Math.floor((rem % 60000) / 1000);
+      el.textContent = `${d}d ${String(h).padStart(2,"0")}h ${String(m).padStart(2,"0")}m ${String(s).padStart(2,"0")}s`;
+    }
+  });
+}
+
+async function collectMiningRewards() {
+  const { totalPending } = calculatePendingMining();
+  const amt = Number(totalPending.toFixed(6));
+  if (amt <= 0) return;
+
+  const now = Date.now();
+  const uid = state.user.id;
+  if (state.db) {
+    await state.db.ref(`wallets/${uid}`).transaction(w => {
+      const b = w || state.wallet;
+      return {
+        ...b,
+        totalBalance: Number((Number(b.totalBalance || 0) + amt).toFixed(6)),
+        earnedBalance: Number((Number(b.earnedBalance || 0) + amt).toFixed(6))
+      };
+    });
+    for (const c of state.userCards) {
+      if (c.status === "active") {
+        await state.db.ref(`userCards/${uid}/${c.id}/lastCollectedAt`).set(Math.min(now, Number(c.expiresAt || now)));
+      }
+    }
+    await state.db.ref(`transactions/${uid}`).push({ type: "mining_collect", title: "Collected Mining Rewards", amount: amt, timestamp: now });
+  }
+  showToast(`Collected $${amt.toFixed(4)}!`);
+}
+
+/* Cards Catalog & Claim / Purchase */
+function renderCardsCatalog() {
+  const wrap = document.getElementById("cardsCatalogContainer");
+  wrap.innerHTML = state.cardsCatalog.map(card => {
+    const total30 = (Number(card.dailyReward) * Number(card.durationDays || 30)).toFixed(2);
+    const pct = card.price > 0 ? Math.round((card.dailyReward / card.price) * 100) : 0;
+    const isFree = Number(card.price) === 0;
+    const btnText = isFree ? (state.freeBronzeClaimed ? "Claimed" : "Claim free") : `Buy &middot; $${card.price}`;
+    const imgSrc = card.imageUrl || "https://i.ibb.co/ksRwfTWh/image.png";
+
+    return `
+      <div class="card-package-wrapper">
+        <div class="metallic-card" data-card-id="${card.id}">
+          <img class="metallic-card-bg" src="${imgSrc}" alt="${card.name} Card" loading="lazy">
+        </div>
+        <div class="card-action-footer">
+          <div>
+            <div style="font-weight:700;font-size:15px;">${card.name}</div>
+            <div style="font-size:12px;color:var(--muted);">${isFree ? `Free mining &middot; $${Number(card.dailyReward).toFixed(2)}/day &middot; $${total30}/30 days` : `Income ${pct}% per day &middot; $${Number(card.dailyReward).toFixed(2)}/day &middot; $${total30}/30 days`}</div>
+          </div>
+          <button class="btn-card-action" ${isFree && state.freeBronzeClaimed ? "disabled style='opacity:0.55;'" : ""} onclick="initiateCardAction('${card.id}')">${btnText}</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+  attachInteractiveCardTilt();
+}
+
+function initiateCardAction(cardId) {
+  const card = state.cardsCatalog.find(c => c.id === cardId);
+  if (!card) return;
+  if (Number(card.price) === 0) {
+    openClaimBronzeModal();
+    return;
+  }
+  const bal = Number(state.wallet.totalBalance || 0);
+  if (bal < Number(card.price)) {
+    openModal(`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3>Insufficient Balance</h3>
+        <button onclick="closeModal()" style="border:none;background:var(--bg-sec);width:30px;height:30px;border-radius:50%;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
+        <strong>${card.name}</strong> card costs <strong>$${Number(card.price).toFixed(2)}</strong>. Your balance is <strong>$${bal.toFixed(3)}</strong>.
+      </p>
+      <button class="btn-primary-full" onclick="closeModal(); switchTab('deposit');">Deposit Funds</button>
+    `);
+    return;
+  }
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h3>Activate ${card.name}</h3>
+      <button onclick="closeModal()" style="border:none;background:var(--bg-sec);width:30px;height:30px;border-radius:50%;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <button class="btn-primary-full" id="btnConfirmCard" onclick="confirmCardActivation('${card.id}')">Save & Set Mine Card ($${Number(card.price).toFixed(2)})</button>
+  `);
+}
+
+function openClaimBronzeModal() {
+  if (state.freeBronzeClaimed) {
+    showToast("Free Bronze card already claimed!");
+    return;
+  }
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h3>Claim Free Bronze Card</h3>
+      <button onclick="closeModal()" style="border:none;background:var(--bg-sec);width:30px;height:30px;border-radius:50%;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">
+      Daily yield: <strong>$0.10/day</strong> &middot; Official channel (<a href="#" onclick="event.preventDefault();joinOfficialChannel();" style="color:var(--primary);font-weight:600;">Join Channel</a>) is optional.
+    </p>
+    <button class="btn-primary-full" id="btnConfirmCard" onclick="confirmCardActivation('bronze')">Save & Set Mine Card (FREE)</button>
+  `);
+}
+
+async function confirmCardActivation(cardId) {
+  const card = state.cardsCatalog.find(c => c.id === cardId);
+  if (!card) return;
+  const customName = card.name;
+  const price = Number(card.price || 0);
+  const now = Date.now();
+  const expiresAt = now + Number(card.durationDays || 30) * 86400 * 1000;
+  const uid = state.user.id;
+
+  if (price === 0 && state.freeBronzeClaimed) {
+    showToast("Free Bronze card already claimed.");
+    return;
+  }
+
+  if (state.db) {
+    if (price > 0) {
+      let ok = false;
+      await state.db.ref(`wallets/${uid}`).transaction(w => {
+        const b = w || state.wallet;
+        if (Number(b.totalBalance || 0) < price) return;
+        ok = true;
+        return { ...b, totalBalance: Number((Number(b.totalBalance) - price).toFixed(6)) };
+      });
+      if (!ok) {
+        showToast("Insufficient balance!");
+        return;
+      }
+    }
+    await state.db.ref(`userCards/${uid}`).push({
+      cardId,
+      cardName: card.name,
+      customName,
+      pricePaid: price,
+      dailyReward: Number(card.dailyReward),
+      durationDays: Number(card.durationDays || 30),
+      status: "active",
+      activatedAt: now,
+      lastCollectedAt: now,
+      expiresAt
+    });
+    if (price === 0) {
+      await state.db.ref(`users/${uid}/freeBronzeClaimed`).set(true);
+    }
+    await state.db.ref(`transactions/${uid}`).push({
+      type: price === 0 ? "free_card" : "card_buy",
+      title: `${price === 0 ? "Claimed" : "Bought"} ${card.name} (${customName})`,
+      amount: -price,
+      timestamp: now
+    });
+  }
+
+  closeModal();
+  showToast(`"${customName}" activated!`);
+  switchTab("mining");
+}
+
+/* Tasks, Ads & Milestones */
+function joinOfficialChannel() {
+  const raw = (state.adminConfig.channelHandle || "https://t.me/usersonlyclaimcode").trim();
+  const targetUrl = raw.startsWith("http") ? raw : `https://t.me/${raw.replace(/^@/, "")}`;
+  window.open(targetUrl, "_blank");
+}
+
+function renderTasksTab() {
+  document.getElementById("officialChannelHandle").textContent = `Join ${state.adminConfig.channelHandle || "@TonXCryptoNews"}`;
+  if (state.channelVerified) {
+    document.getElementById("channelTaskActions").innerHTML = `<span class="badge-tag green"><i class="fa-solid fa-check"></i> Verified</span>`;
+  }
+
+  const pList = document.getElementById("partnerTasksList");
+  if (!state.tasks.length) {
+    pList.innerHTML = `<div style="font-size:12px;color:var(--muted);">No partner tasks active.</div>`;
+  } else {
+    pList.innerHTML = state.tasks.map(t => {
+      const done = !!state.completedTaskIds[t.id];
+      return `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-weight:700;font-size:13.5px;">${t.title}</div>
+            <div style="color:var(--success);font-weight:700;font-size:12px;">+$${Number(t.reward).toFixed(4)}</div>
+          </div>
+          <button style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-weight:600;font-size:12px;cursor:pointer;" ${done ? "disabled" : ""} onclick="completePartnerTask('${t.id}', '${t.url}')">${done ? "Done" : "Go"}</button>
+        </div>
+      `;
+    }).join("");
+  }
+
+  const limit = Number(state.adminConfig.adDailyLimit || 20);
+  const adReward = Number(state.adminConfig.adRewardUsd || 0.0001);
+  document.getElementById("adRewardLabel").textContent = `$${adReward.toFixed(4)}`;
+  document.getElementById("adCounterLabel").textContent = `${state.adsWatchedToday} / ${limit}`;
+  document.getElementById("btnWatchAd").disabled = state.adsWatchedToday >= limit;
+
+  const verifiedRefs = state.referrals.filter(r => r.status === "verified").length;
+  document.getElementById("milestoneVerifiedCount").textContent = verifiedRefs;
+  document.getElementById("milestonesListContainer").innerHTML = state.milestones.map(m => {
+    const pct = Math.min(100, Math.round((verifiedRefs / m.target) * 100));
+    const claimed = !!state.claimedMilestones[m.id];
+    const eligible = verifiedRefs >= m.target && !claimed;
+    return `
+      <div class="milestone-item">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:700;font-size:13px;">Invite ${m.target.toLocaleString()} friends</div>
+            <div style="font-size:11.5px;color:var(--muted);">Reward <strong style="color:var(--success);">$${m.reward.toFixed(2)}</strong></div>
+          </div>
+          <button style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-weight:600;font-size:12px;cursor:pointer;" ${eligible ? "" : "disabled"} onclick="claimMilestone('${m.id}')">${claimed ? "Claimed" : "Claim"}</button>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function completePartnerTask(taskId, url) {
+  if (url) window.open(url, "_blank");
+  const task = state.tasks.find(t => t.id === taskId);
+  if (!task || state.completedTaskIds[taskId]) return;
+  const reward = Number(task.reward || 0.001);
+  const uid = state.user.id;
+  if (state.db) {
+    await state.db.ref(`taskCompletions/${uid}/${taskId}`).set({ completedAt: Date.now(), reward });
+    await state.db.ref(`wallets/${uid}`).transaction(w => {
+      const b = w || state.wallet;
+      return { ...b, totalBalance: Number((Number(b.totalBalance || 0) + reward).toFixed(6)), earnedBalance: Number((Number(b.earnedBalance || 0) + reward).toFixed(6)) };
+    });
+    await state.db.ref(`transactions/${uid}`).push({ type: "task", title: `Task: ${task.title}`, amount: reward, timestamp: Date.now() });
+  }
+  showToast(`Earned +$${reward.toFixed(4)}!`);
+}
+
+function startRewardedAd() {
+  let sec = 10;
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h3>Watch Reward Ad</h3>
+      <button onclick="closeModal()" style="border:none;background:var(--bg-sec);width:30px;height:30px;border-radius:50%;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div style="background:var(--bg-sec);border-radius:14px;padding:24px;text-align:center;margin-bottom:14px;">
+      <i class="fa-solid fa-clapperboard" style="font-size:30px;color:var(--primary);margin-bottom:8px;"></i>
+      <div style="font-weight:700;">TONX CRYPTO Sponsored Ad</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">Wait <strong id="adSecLbl">${sec}s</strong> to claim bonus</div>
+    </div>
+    <button class="btn-primary-full" id="btnClaimAdNow" disabled onclick="claimAdReward()">Verifying (${sec}s)...</button>
+  `);
+  const iv = setInterval(() => {
+    sec--;
+    const sEl = document.getElementById("adSecLbl");
+    const bEl = document.getElementById("btnClaimAdNow");
+    if (!sEl || !bEl) { clearInterval(iv); return; }
+    if (sec > 0) {
+      sEl.textContent = `${sec}s`;
+      bEl.textContent = `Verifying (${sec}s)...`;
+    } else {
+      clearInterval(iv);
+      sEl.textContent = "0s";
+      bEl.disabled = false;
+      bEl.textContent = "Claim Ad Reward";
+    }
+  }, 1000);
+}
+
+async function claimAdReward() {
+  const limit = Number(state.adminConfig.adDailyLimit || 20);
+  if (state.adsWatchedToday >= limit) return;
+  const reward = Number(state.adminConfig.adRewardUsd || 0.0001);
+  const dayKey = new Date().toISOString().slice(0, 10);
+  const uid = state.user.id;
+  if (state.db) {
+    await state.db.ref(`users/${uid}/adStats/${dayKey}`).transaction(c => Number(c || 0) + 1);
+    await state.db.ref(`wallets/${uid}`).transaction(w => {
+      const b = w || state.wallet;
+      return { ...b, totalBalance: Number((Number(b.totalBalance || 0) + reward).toFixed(6)), earnedBalance: Number((Number(b.earnedBalance || 0) + reward).toFixed(6)) };
+    });
+    await state.db.ref(`transactions/${uid}`).push({ type: "ad", title: "Watched Ad Reward", amount: reward, timestamp: Date.now() });
+  }
+  closeModal();
+  showToast(`$${reward.toFixed(4)} added to your balance`, "reward");
+}
+
+async function claimMilestone(mId) {
+  const ms = state.milestones.find(x => x.id === mId);
+  if (!ms || state.claimedMilestones[mId]) return;
+  const uid = state.user.id;
+  if (state.db) {
+    await state.db.ref(`milestones/${uid}/${mId}`).set({ claimedAt: Date.now(), reward: ms.reward });
+    await state.db.ref(`wallets/${uid}`).transaction(w => {
+      const b = w || state.wallet;
+      return { ...b, totalBalance: Number((Number(b.totalBalance || 0) + ms.reward).toFixed(6)), earnedBalance: Number((Number(b.earnedBalance || 0) + ms.reward).toFixed(6)) };
+    });
+  }
+  showToast(`Milestone +$${ms.reward.toFixed(2)} claimed!`);
+}
+
+/* Deposit Step 1 & Step 2 (Exact Video & Screenshot Flow) */
+function openDepositStep(network) {
+  document.getElementById("depositStep1").style.display = "none";
+  document.getElementById("depositStepTon").style.display = "none";
+  document.getElementById("depositStepUsdt").style.display = "none";
+  document.getElementById("tonCreatedInvoiceBox").style.display = "none";
+
+  const minDep = Number(state.adminConfig.minDepositUsd || 2);
+  if (network === "TON") {
+    const rate = Number(state.adminConfig.tonUsdRate || 5.40);
+    document.getElementById("tonRateBadge").textContent = `• Live: 1 TON = $${rate.toFixed(2)}`;
+    document.getElementById("tonMinLabel").textContent = `$${minDep}`;
+    document.getElementById("tonUsdAmountInput").min = minDep;
+    document.getElementById("tonUsdAmountInput").value = "";
+    document.getElementById("tonEquivalentText").textContent = "≈ 0.0000TON";
+    document.querySelectorAll("#depositStepTon .preset-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("depositStepTon").style.display = "block";
+  } else {
+    const addr = state.adminConfig.bep20DepositAddress || CONFIG.defaultBep20Address;
+    document.getElementById("bep20PersonalAddress").textContent = addr;
+    const customQr = (state.adminConfig.bep20QrUrl || "").trim();
+    document.getElementById("bep20QrImg").src = customQr || `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(addr)}`;
+    document.getElementById("usdtMinDisplay").textContent = `$${minDep} USDT`;
+    document.getElementById("depositStepUsdt").style.display = "block";
+  }
+}
+
+function backToDepositStep1() {
+  document.getElementById("depositStep1").style.display = "block";
+  document.getElementById("depositStepTon").style.display = "none";
+  document.getElementById("depositStepUsdt").style.display = "none";
+}
+
+function selectTonPreset(usdAmt, btnEl) {
+  document.querySelectorAll("#depositStepTon .preset-btn").forEach(b => b.classList.remove("active"));
+  if (btnEl) btnEl.classList.add("active");
+  document.getElementById("tonUsdAmountInput").value = usdAmt;
+  onTonUsdChange();
+}
+
+function onTonUsdChange() {
+  const usd = parseFloat(document.getElementById("tonUsdAmountInput").value) || 0;
+  const rate = Number(state.adminConfig.tonUsdRate || 5.40);
+  const ton = rate > 0 ? (usd / rate) : 0;
+  document.getElementById("tonEquivalentText").textContent = `≈ ${ton.toFixed(4)}TON`;
+}
+
+async function lockAndCreateTonInvoice() {
+  const minDep = Number(state.adminConfig.minDepositUsd || 2);
+  const usd = parseFloat(document.getElementById("tonUsdAmountInput").value);
+  if (isNaN(usd) || usd < minDep) {
+    showToast(`Minimum deposit is $${minDep}`);
+    return;
+  }
+  const rate = Number(state.adminConfig.tonUsdRate || 5.40);
+  const tonAmt = Number((usd / rate).toFixed(4));
+  const invId = "INV-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+  const addr = state.adminConfig.tonDepositAddress || CONFIG.defaultTonAddress;
+  const memo = `TONX-${state.user.id}`;
+  const tonkeeperUrl = `https://app.tonkeeper.com/transfer/${addr}?amount=${Math.round(tonAmt * 1e9)}&text=${encodeURIComponent(memo)}`;
+  const now = Date.now();
+
+  if (state.db) {
+    await state.db.ref(`deposits/${state.user.id}/${invId}`).set({
+      invoiceId: invId,
+      network: "TON",
+      amountUsd: usd,
+      cryptoAmount: tonAmt,
+      address: addr,
+      memo,
+      status: "pending",
+      createdAt: now,
+      expiresAt: now + 30 * 60 * 1000
+    });
+  }
+
+  const tonQrSrc = (state.adminConfig.tonQrUrl || "").trim() || `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(addr)}`;
+  const box = document.getElementById("tonCreatedInvoiceBox");
+  box.style.display = "block";
+  box.innerHTML = `
+    <div class="surface-card" style="border-color:var(--primary);">
+      <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;">Invoice Locked (30 min) &middot; ${invId}</div>
+      <img src="${tonQrSrc}" alt="TON Deposit QR" style="width:140px;height:140px;border-radius:10px;margin:0 auto 10px;display:block;border:1px solid var(--border);padding:6px;background:#fff;">
+      <div style="font-size:13px;margin-bottom:4px;">Send <strong>${tonAmt} TON</strong> ($${usd.toFixed(2)})</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px;">Memo: <strong>${memo}</strong></div>
+      <div class="addr-copy-box" style="margin-bottom:10px;">
+        <span>${addr}</span>
+        <button class="btn-copy-icon" onclick="copyText('${addr}', 'TON address copied!')"><i class="fa-regular fa-copy"></i></button>
+      </div>
+      <a href="${tonkeeperUrl}" target="_blank" class="btn-primary-full" style="text-decoration:none;margin-bottom:0;">Pay with Tonkeeper (1-Tap)</a>
+    </div>
+  `;
+  showToast(`TON price locked for 30 min (${tonAmt} TON)`);
+}
+
+async function checkBep20Payment() {
+  const btn = document.getElementById("btnCheckPayment");
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Checking blockchain...`;
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Check payment`;
+    showToast("Waiting for incoming BEP20 USDT transaction (15 confirmations)...");
+  }, 1100);
+}
+
+/* Withdraw Step 1 & Step 2 (Exact Video Layout & Validation) */
+function openWithdrawStep2(network) {
+  state.selectedWithdrawNetwork = network;
+  document.getElementById("withdrawStep1").style.display = "none";
+  document.getElementById("withdrawStep2").style.display = "block";
+
+  const isTon = network === "USDT_TON";
+  document.getElementById("wdrStep2Title").textContent = isTon ? "Withdraw USDT TON" : "Withdraw USDT BEP20";
+  document.getElementById("wdrStep2Sub").textContent = isTon ? "Step 2 · TON network" : "Step 2 · BNB Smart Chain";
+  const badge = document.getElementById("wdrStep2Badge");
+  badge.className = `gateway-logo ${isTon ? "ton" : "usdt"}`;
+  badge.style.width = "42px";
+  badge.style.height = "42px";
+  badge.style.fontSize = "19px";
+  badge.innerHTML = isTon ? `<i class="fa-solid fa-gem"></i>` : `<i class="fa-solid fa-dollar-sign"></i>`;
+
+  document.getElementById("wdrAddrLabel").innerHTML = isTon
+    ? `<i class="fa-solid fa-gem" style="color:#0098EA"></i> USDT TON address`
+    : `<i class="fa-solid fa-dollar-sign" style="color:var(--success)"></i> USDT BEP20 address`;
+  document.getElementById("withdrawAddressInput").placeholder = isTon ? "UQ... or EQ..." : "0x...";
+  document.getElementById("withdrawAddressInput").value = "";
+  document.getElementById("withdrawAmountInput").value = "";
+
+  const minW = Number(state.adminConfig.minWithdrawUsd || 1);
+  const feeW = Number(state.adminConfig.withdrawFeeUsd || 0.20);
+  const earned = Number(state.wallet.earnedBalance || 0);
+
+  document.getElementById("withdrawAmountInput").min = minW;
+  document.getElementById("withdrawAmountInput").placeholder = `Min $${minW}`;
+  document.getElementById("wdr2MinText").textContent = `$${minW}`;
+  document.getElementById("wdr2MaxText").textContent = `$${earned.toFixed(2)}`;
+  document.getElementById("wdr2FeeText").textContent = `$${feeW.toFixed(2)}`;
+  document.getElementById("wdrNetworkFee").textContent = `$${feeW.toFixed(2)}`;
+  updateWithdrawCalc();
+}
+
+function backToWithdrawStep1() {
+  document.getElementById("withdrawStep1").style.display = "block";
+  document.getElementById("withdrawStep2").style.display = "none";
+}
+
+function applyWithdrawMax() {
+  const earned = Number(state.wallet.earnedBalance || 0);
+  document.getElementById("withdrawAmountInput").value = earned > 0 ? earned.toFixed(4) : "0.00";
+  updateWithdrawCalc();
+}
+
+function updateWithdrawCalc() {
+  const amt = parseFloat(document.getElementById("withdrawAmountInput").value) || 0;
+  const fee = Number(state.adminConfig.withdrawFeeUsd || 0.20);
+  const net = Math.max(0, amt - fee);
+  const totalDed = amt > 0 ? (amt + fee) : fee;
+
+  document.getElementById("wdrYouReceive").textContent = `$${net.toFixed(2)}`;
+  document.getElementById("wdrNetworkFee").textContent = `$${fee.toFixed(2)}`;
+  document.getElementById("wdrTotalDeducted").textContent = `$${totalDed.toFixed(2)}`;
+  document.getElementById("wdrSubmitLabel").textContent = amt > 0 ? `Withdraw $${amt.toFixed(2)}` : "Withdraw";
+}
+
+async function submitWithdrawalRequest() {
+  const minConfirmed = Number(state.adminConfig.minConfirmedDepositForWithdraw || 2);
+  const confirmedDep = Number(state.wallet.confirmedDepositsTotal || 0);
+  const minW = Number(state.adminConfig.minWithdrawUsd || 1);
+  const earned = Number(state.wallet.earnedBalance || 0);
+
+  const addr = (document.getElementById("withdrawAddressInput").value || "").trim();
+  const amt = parseFloat(document.getElementById("withdrawAmountInput").value);
+
+  if (confirmedDep < minConfirmed) {
+    showToast(`At least $${minConfirmed} in confirmed deposits is required before withdrawal.`);
+    return;
+  }
+  if (!addr || addr.length < 15) {
+    showToast("Please enter a valid destination wallet address.");
+    return;
+  }
+  if (isNaN(amt) || amt < minW) {
+    showToast(`Minimum withdrawal is $${minW}.`);
+    return;
+  }
+  if (amt > earned) {
+    showToast("Insufficient withdrawable balance.");
+    return;
+  }
+
+  const fee = Number(state.adminConfig.withdrawFeeUsd || 0.20);
+  const netAmount = Number(Math.max(0, amt - fee).toFixed(4));
+  const reqId = "WDR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+  const now = Date.now();
+  const uid = state.user.id;
+
+  if (state.db) {
+    let ok = false;
+    await state.db.ref(`wallets/${uid}`).transaction(w => {
+      const b = w || state.wallet;
+      if (Number(b.earnedBalance || 0) < amt) return;
+      ok = true;
+      return {
+        ...b,
+        totalBalance: Number((Number(b.totalBalance || 0) - amt).toFixed(6)),
+        earnedBalance: Number((Number(b.earnedBalance || 0) - amt).toFixed(6))
+      };
+    });
+    if (!ok) {
+      showToast("Withdrawal balance check failed.");
+      return;
+    }
+    await state.db.ref(`withdrawals/${uid}/${reqId}`).set({
+      requestId: reqId,
+      network: state.selectedWithdrawNetwork,
+      address: addr,
+      amount: amt,
+      fee,
+      netAmount,
+      status: "pending",
+      txHash: "",
+      createdAt: now
+    });
+    await state.db.ref(`transactions/${uid}`).push({
+      type: "withdraw",
+      title: `${state.selectedWithdrawNetwork} Withdrawal (${reqId})`,
+      amount: -amt,
+      timestamp: now
+    });
+  }
+
+  showToast(`Withdrawal ${reqId} submitted!`);
+  backToWithdrawStep1();
+}
+
+/* Referral Actions */
+function shareInviteLink() {
+  const url = document.getElementById("userReferralUrl").textContent;
+  const text = "Start mining daily crypto rewards on TONX CRYPTO!";
+  window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, "_blank");
+}
+
+async function collectReferralCommission() {
+  const ready = Number(state.wallet.commissionReady || 0);
+  if (ready <= 0) return;
+  const uid = state.user.id;
+  if (state.db) {
+    await state.db.ref(`wallets/${uid}`).transaction(w => {
+      const b = w || state.wallet;
+      const cReady = Number(b.commissionReady || 0);
+      return {
+        ...b,
+        commissionReady: 0,
+        totalBalance: Number((Number(b.totalBalance || 0) + cReady).toFixed(6)),
+        earnedBalance: Number((Number(b.earnedBalance || 0) + cReady).toFixed(6))
+      };
+    });
+    await state.db.ref(`transactions/${uid}`).push({ type: "ref_collect", title: "Collected Referral Commission", amount: ready, timestamp: Date.now() });
+  }
+  showToast(`Collected $${ready.toFixed(4)} commission!`);
+}
+
+function openGettingStarted() {
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h3>Getting Started</h3>
+      <button onclick="closeModal()" style="border:none;background:var(--bg-sec);width:30px;height:30px;border-radius:50%;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <p style="font-size:13px;color:var(--muted);line-height:1.55;">
+      1. Claim your free Bronze card or buy higher mining cards in the <strong>Cards</strong> tab.<br>
+      2. Watch live mining accrual and tap <strong>Collect</strong> anytime.<br>
+      3. Deposit via TON or USDT (BEP20) and withdraw earned USDT after meeting the $2 confirmed deposit requirement.
+    </p>
+  `);
+}
+
+function toggleLanguage() {
+  state.lang = state.lang === "en" ? "ru" : "en";
+  document.getElementById("langFlag").textContent = state.lang === "en" ? "🇬🇧" : "🇷🇺";
+  document.getElementById("langText").textContent = state.lang === "en" ? "English" : "Русский";
+}
+
+function renderAll() {
+  const totalBal = Number(state.wallet.totalBalance || 0);
+  const earnedBal = Number(state.wallet.earnedBalance || 0);
+  const commReady = Number(state.wallet.commissionReady || 0);
+  const commTotal = Number(state.wallet.commissionEarnedTotal || 0);
+
+  document.getElementById("heroTotalBalance").textContent = `$${totalBal.toFixed(3)}`;
+  document.getElementById("cardsTabBalance").textContent = `$${totalBal.toFixed(3)}`;
+  document.getElementById("withdrawAvailBal").textContent = `$${totalBal.toFixed(3)}`;
+  document.getElementById("wdr2AvailBal").textContent = `$${totalBal.toFixed(3)}`;
+  document.getElementById("withdrawableEarnedBal").textContent = `$${earnedBal.toFixed(4)}`;
+  document.getElementById("wdr2WithdrawableBal").textContent = `$${earnedBal.toFixed(4)}`;
+  document.getElementById("wdr2MaxText").textContent = `$${earnedBal.toFixed(2)}`;
+
+  document.getElementById("liveTonPriceDisplay").textContent = `Live price: $${Number(state.adminConfig.tonUsdRate || 5.40).toFixed(2)} / TON`;
+  document.getElementById("cfgMinWithdraw").textContent = `$${state.adminConfig.minWithdrawUsd || 1}`;
+  document.getElementById("cfgFeeWithdraw").textContent = `$${Number(state.adminConfig.withdrawFeeUsd || 0.20).toFixed(2)}`;
+
+  document.getElementById("freeBronzeBanner").style.display = state.freeBronzeClaimed ? "none" : "block";
+
+  const activeCards = state.userCards.filter(c => c.status === "active");
+  const cardsSummary = document.getElementById("myOwnedCardsSummary");
+  const catalogImgMap = Object.fromEntries(state.cardsCatalog.map(d => [d.id, d.imageUrl]));
+  if (activeCards.length > 0) {
+    const dashMoveableHtml = activeCards.map(c => {
+      const cid = c.cardId || "bronze";
+      const imgSrc = c.imageUrl || catalogImgMap[cid] || "https://i.ibb.co/SDs8zk1w/image.png";
+      return `
+        <div style="margin-top:12px;">
+          <div class="metallic-card" data-card-id="${cid}" style="margin-bottom:6px;">
+            <img class="metallic-card-bg" src="${imgSrc}" alt="${c.cardName} Card" loading="lazy">
+          </div>
+          <div class="active-rig-item" style="margin-top:0;">
+            <div>
+              <strong style="font-size:13px;">${c.cardName}</strong>
+              <div style="font-size:11px;color:var(--muted);">Expires in <span data-card-expires="${c.expiresAt}">...</span></div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700;font-size:12.5px;color:var(--primary);">+$${Number(c.dailyReward).toFixed(2)}/day</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    const ownedSummaryHtml = activeCards.map(c => `
+      <div class="active-rig-item">
+        <div>
+          <strong style="font-size:13px;">${c.cardName}</strong>
+          <div style="font-size:11px;color:var(--muted);" data-card-expires="${c.expiresAt}">...</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:700;font-size:12.5px;color:var(--primary);">+$${Number(c.dailyReward).toFixed(2)}/day</div>
+        </div>
+      </div>
+    `).join("");
+
+    document.getElementById("dashboardActiveCardsList").innerHTML = dashMoveableHtml;
+    cardsSummary.style.display = "block";
+    document.getElementById("ownedCardsCounter").textContent = activeCards.length;
+    document.getElementById("ownedCardsDetailList").innerHTML = ownedSummaryHtml;
+  } else {
+    document.getElementById("dashboardActiveCardsList").innerHTML = "";
+    cardsSummary.style.display = "none";
+  }
+
+  document.getElementById("refTotalEarned").textContent = `$${commTotal.toFixed(2)}`;
+  document.getElementById("refTeamSize").textContent = state.referrals.length;
+  document.getElementById("refCommissionReady").textContent = `$${commReady.toFixed(4)}`;
+  document.getElementById("btnCollectCommission").disabled = commReady < 0.0001;
+  document.getElementById("refCountInvited").textContent = state.referrals.length;
+  document.getElementById("refCountVerified").textContent = state.referrals.filter(r => r.status === "verified").length;
+  document.getElementById("refCountPending").textContent = state.referrals.filter(r => r.status !== "verified").length;
+
+  renderCardsCatalog();
+  renderTasksTab();
+  attachInteractiveCardTilt();
+  applyCardColorShadows();
+  renderActivityFeed();
+  renderDepositHistory();
+  renderWithdrawHistory();
+  tickLiveMining();
+}
+
+function renderActivityFeed() {
+  const el = document.getElementById("activityFeedContainer");
+  if (!state.transactions.length) {
+    el.innerHTML = `<div class="empty-state">No activity yet</div>`;
+    return;
+  }
+  el.innerHTML = state.transactions.map(tx => {
+    const pos = Number(tx.amount) >= 0;
+    return `
+      <div class="history-item">
+        <div>
+          <div style="font-weight:600;">${tx.title || tx.type}</div>
+          <div style="font-size:11px;color:var(--muted);">${new Date(tx.timestamp || Date.now()).toLocaleString()}</div>
+        </div>
+        <strong style="color:${pos ? "var(--success)" : "var(--text)"};">${pos ? "+" : ""}$${Number(tx.amount).toFixed(4)}</strong>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderDepositHistory() {
+  const el = document.getElementById("depositHistoryList");
+  if (!state.deposits.length) {
+    el.innerHTML = `<div class="empty-state">No deposits recorded yet</div>`;
+    return;
+  }
+  el.innerHTML = state.deposits.map(d => `
+    <div class="history-item">
+      <div>
+        <div style="font-weight:600;">${d.network} &middot; ${d.status}</div>
+        <div style="font-size:11px;color:var(--muted);">${d.invoiceId || d.address || ""}</div>
+      </div>
+      <strong style="color:var(--success);">+$${Number(d.amountUsd).toFixed(2)}</strong>
+    </div>
+  `).join("");
+}
+
+function renderWithdrawHistory() {
+  const el = document.getElementById("withdrawHistoryList");
+  if (!state.withdrawals.length) {
+    el.innerHTML = `<div class="empty-state">No withdrawal requests yet</div>`;
+    return;
+  }
+  el.innerHTML = state.withdrawals.map(w => `
+    <div class="history-item">
+      <div>
+        <div style="font-weight:600;">${w.network} &middot; ${w.status}</div>
+        <div style="font-size:11px;color:var(--muted);">${w.address}</div>
+      </div>
+      <strong>-$${Number(w.amount).toFixed(2)}</strong>
+    </div>
+  `).join("");
+}
+
+
+function attachInteractiveCardTilt() {
+  document.querySelectorAll(".metallic-card").forEach(card => {
+    if (card.dataset.tiltBound) return;
+    card.dataset.tiltBound = "1";
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    const applyMove = (clientX, clientY, boost = false) => {
+      const rect = card.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
+      const y = Math.max(0, Math.min(rect.height, clientY - rect.top));
+      const px = (x / rect.width) - 0.5;
+      const py = (y / rect.height) - 0.5;
+      const maxTilt = boost ? 22 : 16;
+      const rotateY = (px * maxTilt).toFixed(2);
+      const rotateX = (-py * maxTilt).toFixed(2);
+      const scale = boost ? 1.04 : 1.02;
+
+      card.style.transition = "transform 0.08s ease-out";
+      card.style.transform = `perspective(650px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
+      card.style.setProperty("--shine-x", `${((x / rect.width) * 100).toFixed(1)}%`);
+      card.style.setProperty("--shine-y", `${((y / rect.height) * 100).toFixed(1)}%`);
+      card.style.setProperty("--shine-opacity", boost ? "0.62" : "0.45");
+    };
+
+    const resetMove = () => {
+      isDragging = false;
+      card.style.transition = "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)";
+      card.style.transform = "perspective(650px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+      card.style.setProperty("--shine-x", "50%");
+      card.style.setProperty("--shine-y", "50%");
+      card.style.setProperty("--shine-opacity", "0.35");
+    };
+
+    card.addEventListener("pointerdown", (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      card.setPointerCapture?.(e.pointerId);
+      applyMove(e.clientX, e.clientY, true);
+    });
+
+    card.addEventListener("pointermove", (e) => {
+      if (e.pointerType === "mouse" || isDragging) {
+        applyMove(e.clientX, e.clientY, isDragging);
+      }
+    });
+
+    card.addEventListener("pointerup", resetMove);
+    card.addEventListener("pointercancel", resetMove);
+    card.addEventListener("lostpointercapture", resetMove);
+    card.addEventListener("pointerleave", () => {
+      if (!isDragging) resetMove();
+    });
+  });
+}
+
+
+function applyCardColorShadows() {
+  const shadowMap = {
+    bronze: "0 12px 24px rgba(180, 125, 72, 0.34)",
+    silver: "0 12px 24px rgba(115, 130, 148, 0.34)",
+    copper: "0 12px 24px rgba(196, 95, 52, 0.35)",
+    ruby: "0 12px 24px rgba(225, 29, 72, 0.35)",
+    sapphire: "0 12px 24px rgba(8, 120, 232, 0.36)",
+    platinum: "0 12px 24px rgba(124, 58, 237, 0.34)",
+    titan: "0 12px 24px rgba(51, 65, 85, 0.36)",
+    emerald: "0 12px 24px rgba(16, 185, 129, 0.35)",
+    obsidian: "0 12px 24px rgba(24, 24, 27, 0.38)",
+    gold: "0 12px 24px rgba(234, 179, 8, 0.36)",
+    diamond: "0 12px 24px rgba(14, 165, 233, 0.38)"
+  };
+  document.querySelectorAll(".metallic-card[data-card-id]").forEach(el => {
+    const cid = el.getAttribute("data-card-id");
+    if (shadowMap[cid]) {
+      el.style.boxShadow = shadowMap[cid];
+    }
+  });
+}
+
+window.addEventListener("DOMContentLoaded", initApp);
+</script>
+</body>
+</html>
